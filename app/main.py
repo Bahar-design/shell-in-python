@@ -8,7 +8,7 @@ def main():
 
     #Wait for user input
     command = input()
-    for command in valid_command:
+    while True:
         if command not in valid_command:
             print(f"{command}: command not found")
 
