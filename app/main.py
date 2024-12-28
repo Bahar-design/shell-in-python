@@ -12,7 +12,7 @@ def main():
         sys.stdout.flush()
 
         if command not in valid_command:
-            print(f"{command}: command not found")
+            print(f"${command}: command not found")
             continue
 
 
