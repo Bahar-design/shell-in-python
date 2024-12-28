@@ -9,6 +9,8 @@ def main():
             sys.stdout.flush()
 
             command = input()
+            if command == "exit 0":
+                break
             print(f"{command}: command not found")
     except EOFError:
         sys.exit(0)
