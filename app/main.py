@@ -11,7 +11,7 @@ def main():
     for command in valid_command:
         if command not in valid_command:
             print(f"{command}: command not found")
-        else:
+
             continue
 
 
