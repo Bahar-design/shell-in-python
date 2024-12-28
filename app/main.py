@@ -9,7 +9,6 @@ def main():
             sys.stdout.flush()
 
             command = input()
-
             print(f"{command}: command not found")
     except EOFError:
         sys.exit(0)
