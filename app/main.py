@@ -14,7 +14,7 @@ def main():
                 break
 
             if command.startswith("echo "):
-                print(command.replace("echo ", ""))
+                print(command[5:])
 
             print(f"{command}: command not found")
     except EOFError:
