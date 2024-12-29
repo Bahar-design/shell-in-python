@@ -3,7 +3,6 @@ import sys
 
 def main():
     try:
-        builtin = {"echo", "exit", "type"}
         while True:
             sys.stdout.write("$ ")
             sys.stdout.flush()
@@ -18,6 +17,7 @@ def main():
 
             elif command.startswith("type "):
                 type = command[5:]
+                builtin = {"echo", "exit", "type"}
                 if type in builtin:
                     print(f"{type} is a shell builtin")
                 else:
