@@ -13,10 +13,11 @@ def main():
             if command == "exit 0":
                 break
 
-            if command.startswith("echo "):
+            elif command.startswith("echo "):
                 print(command[5:])
 
-            print(f"{command}: command not found")
+            else:
+                print(f"{command}: command not found")
     except EOFError:
         sys.exit(0)
 
