@@ -19,7 +19,7 @@ def main():
 
         elif command.startswith("type "):
             type = command[5:]
-            builtin = {"echo", "exit", "type"}
+            builtin = {"echo", "exit", "type", "pwd"}
 
             if type in builtin:
                 print(f"{type} is a shell builtin")
@@ -36,6 +36,10 @@ def main():
 
             if not found:
                 print(f"{type}: not found")
+            continue
+
+        elif command == "pwd":
+            print(os.getcwd())
             continue
 
         
