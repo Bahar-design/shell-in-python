@@ -41,7 +41,7 @@ def main():
         elif command == "pwd":
             print(os.getcwd())
             continue
-
+        #cd relative path test
         elif command.startswith("cd"):
             path = command[3:].strip()
             try:
