@@ -19,7 +19,7 @@ def main():
 
         elif command.startswith("type "):
             type = command[5:]
-            builtin = {"echo", "exit", "type", "pwd"}
+            builtin = {"echo", "exit", "type", "pwd", "cd"}
 
             if type in builtin:
                 print(f"{type} is a shell builtin")
@@ -45,6 +45,8 @@ def main():
         elif command.startswith("cd"):
             path = command[3:].strip()
             os.chdir(path)
+            if FileNotFoundError:
+                print(f"cd: {path}: No such file or directory")
             continue
 
         
