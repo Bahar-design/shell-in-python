@@ -42,6 +42,11 @@ def main():
             print(os.getcwd())
             continue
 
+        elif command.startswith("cd"):
+            path = command[3:].strip()
+            os.chdir(path)
+            continue
+
         
         cmd_args = command.split()
         program = cmd_args[0]
