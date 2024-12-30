@@ -22,6 +22,7 @@ def main():
 
                 if type in builtin:
                     print(f"{type} is a shell builtin")
+                    continue
 
                 path_dir = os.environ.get("PATH", "").split(":")
                 found = False
