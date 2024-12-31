@@ -1,6 +1,7 @@
 import sys
 import os
 import subprocess
+import shlex
 
 
 def main():
@@ -10,11 +11,13 @@ def main():
 
         command = input()
 
+        cmd_args = shlex.split(command)
+
         if command == "exit 0":
             break
 
         elif command.startswith("echo "):
-            print(command[5:])
+            print(" ".join(cmd_args[1:]))
             continue
 
         elif command.startswith("type "):
@@ -46,7 +49,7 @@ def main():
             path = command[3:].strip()
             if path == "~":
                 path = os.environ.get("HOME", "")
-                
+
             try:
                 os.chdir(path)
             except FileNotFoundError:
