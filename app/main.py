@@ -41,7 +41,7 @@ def main():
             break
 
         elif command.startswith("echo "):
-            output = " ".join(cmd_args[1:])
+            output = " ".join(cmd_args[1:]) + "\n"
             if redirect_target: #put into it's own func
                 with open(redirect_target, "w") as f:
                     f.write(output)
@@ -53,18 +53,18 @@ def main():
             type = cmd_args[1]
 
             if type in builtin:
-                output = f"{type} is a shell builtin"
+                output = f"{type} is a shell builtin\n"
             else:
                 path_dir = os.environ.get("PATH", "").split(":")
                 found = False
                 for directory in path_dir:
                     potential_path = os.path.join(directory, type)
                     if os.path.isfile(potential_path) and os.access(potential_path, os.X_OK):
-                        output = f"{type} is {potential_path}"
+                        output = f"{type} is {potential_path}\n"
                         found = True
                         break
                 if not found:
-                    output = f"{type}: not found"
+                    output = f"{type}: not found\n"
 
             if redirect_target:
                 with open(redirect_target, "w") as f:
@@ -74,7 +74,7 @@ def main():
             continue
 
         elif program == "pwd":
-            output = os.getcwd()
+            output = os.getcwd() + "\n"
             if redirect_target:
                 with open(redirect_target, "w") as f:
                     f.write(output)
