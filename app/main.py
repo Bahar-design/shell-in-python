@@ -12,6 +12,7 @@ def main():
         command = input()
 
         cmd_args = shlex.split(command)
+        program = cmd_args[0]
 
         if command == "exit 0":
             break
@@ -55,10 +56,6 @@ def main():
             except FileNotFoundError:
                 print(f"cd: {path}: No such file or directory")
             continue
-
-        
-        cmd_args = command.split()
-        program = cmd_args[0]
 
         path_dir = os.environ.get("PATH", "").split(":")
         execute = None
