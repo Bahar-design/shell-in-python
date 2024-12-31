@@ -61,7 +61,7 @@ def main():
         sys.stdout.write("$ ")
         sys.stdout.flush()
 
-        command = input()
+        command = input().strip()
         if not command:
             continue
         
@@ -77,7 +77,7 @@ def main():
         if cmd_args is None:
             continue
 
-        program = cmd_args
+        program = cmd_args[0]
 
         if program == "exit" and len(cmd_args) > 1 and cmd_args[1] == "0":
             break
@@ -100,10 +100,11 @@ def main():
                 print(output.strip())
             continue
 
-        if program == "cd" and len(cmd_args) > 1:
-            path = cmd_args[1]
-            if path == "~":
+        if program == "cd":
+            if len(cmd_args) == 1 or cmd_args[1] == "~":
                 path = os.environ.get("HOME", "")
+            else:
+                path = cmd_args[1]
 
             try:
                 os.chdir(path)
