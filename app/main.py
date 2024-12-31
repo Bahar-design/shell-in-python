@@ -5,6 +5,8 @@ import shlex
 
 
 def main():
+    builtin = {"echo", "exit", "type", "pwd", "cd"}
+
     while True:
         sys.stdout.write("$ ")
         sys.stdout.flush()
@@ -24,8 +26,11 @@ def main():
                     redirect_index = i
                     break
         
-        while redirect_target:
+        if redirect_target:
             cmd_args = cmd_args[:redirect_index]
+        if not cmd_args:
+            print("Error: Missing command for redirection")
+            continue
 
         if program == "exit" and len(cmd_args) > 1 and cmd_args[1] == "0":
             break
@@ -41,30 +46,27 @@ def main():
 
         elif command.startswith("type "):
             type = command[5:]
-            builtin = {"echo", "exit", "type", "pwd", "cd"}
 
             if type in builtin:
-                print(f"{type} is a shell builtin")
-            
+                output = f"{type} is a shell builtin"
             else:
                 path_dir = os.environ.get("PATH", "").split(":")
                 found = False
                 for directory in path_dir:
                     potential_path = os.path.join(directory, type)
                     if os.path.isfile(potential_path) and os.access(potential_path, os.X_OK):
-                        print(f"{type} is {potential_path}")
+                        output = f"{type} is {potential_path}"
                         found = True
                         break
-
                 if not found:
-                    print(f"{type}: not found")
+                    output = f"{type}: not found"
 
-                if redirect_target:
-                    with open(redirect_target, "w") as f:
-                        f.write(output)
-                else:
-                    print(output.strip())
-                continue
+            if redirect_target:
+                with open(redirect_target, "w") as f:
+                    f.write(output)
+            else:
+                print(output.strip())
+            continue
 
         elif command == "pwd":
             output = os.getcwd()
