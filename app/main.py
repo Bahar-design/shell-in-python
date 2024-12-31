@@ -3,25 +3,115 @@ import os
 import subprocess
 import shlex
 
+def handle_redirection(cmd_args):
+    """Parses & removes redirection operators from command."""
+    redirect_target = None
+    if ">" in cmd_args:
+        try:
+            index = cmd_args.index(">")
+            if index + 1 < len(cmd_args):
+                redirect_target = cmd_args[index + 1]
+                cmd_args = cmd_args[:index]
+            else:
+                print("Error: Missing file target for redirection")
+                return None, None
+        except ValueError:
+            pass
+
+    if "1>" in cmd_args:
+        try:
+            index = cmd_args.index("1>")
+            if index + 1 < len(cmd_args):
+                redirect_target = cmd_args[index + 1]
+                cmd_args = cmd_args[:index]
+            else:
+                print("Error: Missing file target for redirection")
+                return None, None
+        except ValueError:
+            pass
+
+    return cmd_args, redirect_target
+
+def execute_external_command(cmd_args, redirect_target):
+    """Execute external commands & handle redirection when necessary"""
+    program = cmd_args[0]
+    path_dirs = os.environ.get("PATH", "").split(":")
+    executable = None
+
+    for directory in path_dirs:
+        potential_path = os.path.join(directory, program)
+        if os.path.isfile(potential_path) and os.access(potential_path, os.X_OK):
+            executable = potential_path
+            break
+
+    if not executable:
+        print(f"{program}: command not found")
+        return
+
+    with open(redirect_target, "w") if redirect_target else sys.stdout as f:
+        subprocess.run(cmd_args, stdout=f, stderr=sys.stderr)
+
 
 def main():
-    builtin = {"echo", "exit", "type", "pwd", "cd"}
 
     while True:
         sys.stdout.write("$ ")
         sys.stdout.flush()
 
         command = input()
+        if not command:
+            continue
         
-        cmd_args = shlex.split(command)
+        try:
+            cmd_args = shlex.split(command)
+        except ValueError as err:
+            print(f"Error parsing command: {err}")
+
         if not cmd_args:
             continue
-        program = cmd_args[0]
 
-        redirect_target = None
-        redirect_index = None
+        cmd_args, redirect_target = handle_redirection(cmd_args)
+        if cmd_args is None:
+            continue
 
-        for i, arg in enumerate(cmd_args):
+        program = cmd_args
+
+        if program == "exit" and len(cmd_args) > 1 and cmd_args[1] == "0":
+            break
+
+        if program == "echo":
+            output = " ".join(cmd_args[1:]) + "\n"
+            if redirect_target:
+                with open(redirect_target, "w") as f:
+                    f.write(output)
+            else:
+                print(output.strip())
+            continue
+
+        if program == "pwd":
+            output = os.getcwd() + "\n"
+            if redirect_target:
+                with open(redirect_target, "w") as f:
+                    f.write(output)
+            else:
+                print(output.strip())
+            continue
+
+        if program == "cd" and len(cmd_args) > 1:
+            path = cmd_args[1]
+            if path == "~":
+                path = os.environ.get("HOME", "")
+
+            try:
+                os.chdir(path)
+            except FileNotFoundError:
+                print(f"cd: {path}: No such file or directory")
+            continue
+
+        execute_external_command(cmd_args, redirect_target)
+
+
+        """for i, arg in enumerate(cmd_args):
             if arg in {">", "1>"}:
                 if i + 1 < len(cmd_args):
                     redirect_target = cmd_args[i + 1]
@@ -36,18 +126,7 @@ def main():
         if not cmd_args:
             print("Error: Missing command for redirection")
             continue
-
-        if program == "exit" and len(cmd_args) > 1 and cmd_args[1] == "0":
-            break
-
-        elif command.startswith("echo "):
-            output = " ".join(cmd_args[1:]) + "\n"
-            if redirect_target: #put into it's own func
-                with open(redirect_target, "w") as f:
-                    f.write(output)
-            else:
-                print(output.strip())
-            continue
+        program = cmd_args[0]
 
         elif command.startswith("type ") and len(cmd_args) > 1:
             type = cmd_args[1]
@@ -73,26 +152,6 @@ def main():
                 print(output.strip())
             continue
 
-        elif program == "pwd":
-            output = os.getcwd() + "\n"
-            if redirect_target:
-                with open(redirect_target, "w") as f:
-                    f.write(output)
-            else:
-                print(output.strip())
-            continue
-
-        elif command.startswith("cd") and len(cmd_args) > 1:
-            path = cmd_args[1]
-            if path == "~":
-                path = os.environ.get("HOME", "")
-
-            try:
-                os.chdir(path)
-            except FileNotFoundError:
-                print(f"cd: {path}: No such file or directory")
-            continue
-
         path_dir = os.environ.get("PATH", "").split(":")
         execute = None
         for directory in path_dir:
@@ -107,6 +166,7 @@ def main():
 
         with open(redirect_target, "w") if redirect_target else sys.stdout as f:
             subprocess.run([execute] + cmd_args[1:], stdout=f, stderr=sys.stderr)
+    """
 
 if __name__ == "__main__":
     main()
