@@ -48,8 +48,11 @@ def execute_external_command(cmd_args, redirect_target):
         print(f"{program}: command not found")
         return
 
-    with open(redirect_target, "w") if redirect_target else sys.stdout as f:
-        subprocess.run(cmd_args, stdout=f, stderr=sys.stderr)
+    if redirect_target:
+        with open(redirect_target, "w") if redirect_target else sys.stdout as f:
+            subprocess.run(cmd_args, stdout=f, stderr=sys.stderr)
+    else:
+        subprocess.run(cmd_args, stdout=sys.stdout, stderr=sys.stderr)
 
 
 def main():
