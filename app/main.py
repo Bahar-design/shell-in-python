@@ -41,9 +41,12 @@ def main():
         elif command == "pwd":
             print(os.getcwd())
             continue
-        #cd relative path test
+
         elif command.startswith("cd"):
             path = command[3:].strip()
+            if path == "~":
+                path = os.environ.get("HOME", "")
+                
             try:
                 os.chdir(path)
             except FileNotFoundError:
