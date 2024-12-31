@@ -14,6 +14,8 @@ def main():
         command = input()
         
         cmd_args = shlex.split(command)
+        if not cmd_args:
+            continue
         program = cmd_args[0]
 
         redirect_target = None
@@ -24,10 +26,13 @@ def main():
                 if i + 1 < len(cmd_args):
                     redirect_target = cmd_args[i + 1]
                     redirect_index = i
+                else:
+                    print("Error: Missing file target for redirection")
                     break
         
         if redirect_target:
             cmd_args = cmd_args[:redirect_index]
+
         if not cmd_args:
             print("Error: Missing command for redirection")
             continue
@@ -44,8 +49,8 @@ def main():
                 print(output.strip())
             continue
 
-        elif command.startswith("type "):
-            type = command[5:]
+        elif command.startswith("type ") and len(cmd_args) > 1:
+            type = cmd_args[1]
 
             if type in builtin:
                 output = f"{type} is a shell builtin"
@@ -68,7 +73,7 @@ def main():
                 print(output.strip())
             continue
 
-        elif command == "pwd":
+        elif program == "pwd":
             output = os.getcwd()
             if redirect_target:
                 with open(redirect_target, "w") as f:
@@ -77,8 +82,8 @@ def main():
                 print(output.strip())
             continue
 
-        elif command.startswith("cd"):
-            path = command[3:].strip()
+        elif command.startswith("cd") and len(cmd_args) > 1:
+            path = cmd_args[1]
             if path == "~":
                 path = os.environ.get("HOME", "")
 
